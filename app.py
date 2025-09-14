@@ -3,9 +3,10 @@ import cv2
 import numpy as np
 from PIL import Image
 
-# === Placeholder detection function (replace with real model) ===
 def detect_deepfake(media):
     if isinstance(media, str):  # video path
+        import os
+        import tempfile
         cap = cv2.VideoCapture(media)
         ret, frame = cap.read()
         cap.release()
@@ -15,17 +16,14 @@ def detect_deepfake(media):
     else:  # image
         img = np.array(media)
 
-    # ---- Replace this with real model inference ----
     score = np.random.uniform(0, 1)
     verdict = "Deepfake" if score > 0.5 else "Real"
 
-    # Fake heatmap overlay
     heatmap = np.random.randint(0, 255, img.shape, dtype=np.uint8)
     overlay = cv2.addWeighted(img, 0.6, heatmap, 0.4, 0)
 
     return verdict, float(score), Image.fromarray(overlay)
 
-# === Gradio UI ===
 demo = gr.Interface(
     fn=detect_deepfake,
     inputs=gr.File(file_types=[".jpg", ".png", ".mp4", ".avi"], type="file"),
@@ -39,4 +37,5 @@ demo = gr.Interface(
 )
 
 if __name__ == "__main__":
-    demo.launch()
+    # Important for Render: bind to 0.0.0.0 and port 8080
+    demo.launch(server_name="0.0.0.0", server_port=8080)
